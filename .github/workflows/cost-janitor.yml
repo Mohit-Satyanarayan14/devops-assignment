@@ -37,6 +37,11 @@ jobs:
         run: |
           sleep 15
 
+      - name: Verify LocalStack
+        run: |
+          docker ps
+          curl http://localhost:4566/_localstack/health    
+
       - name: Terraform Init
         run: |
           cd terraform
