@@ -7,6 +7,16 @@ jobs:
   janitor:
     runs-on: ubuntu-latest
 
+    services:
+      localstack:
+        image: localstack/localstack:3.5
+        ports:
+          - 4566:4566
+        env:
+          SERVICES: ec2,s3
+          DEBUG: 1
+          AWS_DEFAULT_REGION: us-east-1
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -24,11 +34,9 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Start LocalStack
-        uses: LocalStack/setup-localstack@main
-        with:
-          image-tag: 'latest'
-          install-awslocal: 'true'  
+      - name: Verify LocalStack
+        run: |
+          curl http://localhost:4566/_localstack/health
 
       - name: Terraform Init
         run: |
@@ -47,7 +55,7 @@ jobs:
 
       - name: Run Cost Janitor
         run: |
-          python janitor/janitor.py
+          python janitor/janitor.py --dry-run
 
       - name: Upload JSON Report
         uses: actions/upload-artifact@v4
