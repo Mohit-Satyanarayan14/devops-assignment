@@ -2,6 +2,7 @@ name: Cost Janitor
 
 on:
   pull_request:
+  push:  
 
 jobs:
   janitor:
