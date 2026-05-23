@@ -25,22 +25,10 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Start LocalStack
-        run: |
-          docker run -d \
-            --name localstack \
-            -p 4566:4566 \
-            -e SERVICES=ec2,s3 \
-            -e DEBUG=1 \
-            localstack/localstack:latest
-
-      - name: Wait for LocalStack
-        run: |
-          sleep 15
-
-      - name: Verify LocalStack
-        run: |
-          docker ps
-          curl http://localhost:4566/_localstack/health    
+        uses: LocalStack/setup-localstack@main
+        with:
+          image-tag: 'latest'
+          install-awslocal: 'true'  
 
       - name: Terraform Init
         run: |
