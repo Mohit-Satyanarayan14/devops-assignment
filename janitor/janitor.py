@@ -178,7 +178,7 @@ def main():
     print(f"Found {total} orphaned resources")
 
     if args.dry_run and total > 0:
-        sys.exit(1)
+        print("Dry run detected orphaned resources. No actions will be taken.")
 
 
 if __name__ == "__main__":
