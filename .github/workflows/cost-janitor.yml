@@ -7,17 +7,6 @@ jobs:
   janitor:
     runs-on: ubuntu-latest
 
-    services:
-      localstack:
-        image: localstack/localstack:latest
-        ports:
-          - 4566:4566
-        env:
-          SERVICES: ec2,s3
-          DEBUG: 1
-          AWS_DEFAULT_REGION: us-east-1
-        
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -30,13 +19,23 @@ jobs:
       - name: Install Python Dependencies
         run: |
           pip install -r janitor/requirements.txt
+          pip install terraform-local
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Install terraform-local
+      - name: Start LocalStack
         run: |
-          pip install terraform-local
+          docker run -d \
+            --name localstack \
+            -p 4566:4566 \
+            -e SERVICES=ec2,s3 \
+            -e DEBUG=1 \
+            localstack/localstack:latest
+
+      - name: Wait for LocalStack
+        run: |
+          sleep 15
 
       - name: Terraform Init
         run: |
